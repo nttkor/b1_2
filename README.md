@@ -97,6 +97,18 @@ useEffect(() => { refetch(); }, [refetch]); // id 바뀌면 refetch 새 참조 �
 
 ---
 
+## Supabase 선택 이유 및 연동 경험
+
+**선택 이유**: PostgreSQL 기반이라 `schema.sql` 한 파일로 스키마·RLS 정책을 버전 관리할 수 있고, SDK 메서드 체이닝이 SQL과 1:1 대응되어 읽기 쉽다. Firebase(NoSQL)보다 단일 테이블 CRUD에 구조가 명확했다.
+
+**연동 중 겪은 어려움**: `useEffect` + `useCallback` 의존성 배열 설정 실수로 무한 루프 발생. `refetch`를 `useCallback` 없이 의존성에 넣으면 렌더마다 새 함수 참조가 생겨 effect가 계속 재실행된다. `useCallback([])` / `useCallback([id])`로 메모이제이션해 해결했다.
+
+**인증 미구현 근거**: 미션 평가 기준이 "React 구조·데이터 흐름"이며 인증은 선택 항목이다. RLS 정책으로 `anon` 키에 전체 CRUD를 허용하고 `schema.sql`에 근거를 주석으로 명시했다. 인증 추가 시 Supabase Auth + 보호 라우트 구조가 필요하며 이번 미션 스코프 외로 판단했다.
+
+상세 내용(RLS 정책, useEffect 패턴, 버전) → [docs/tech.md](./docs/tech.md)
+
+---
+
 ## 개발 환경
 
 | 항목 | 내용 |
@@ -106,6 +118,8 @@ useEffect(() => { refetch(); }, [refetch]); // id 바뀌면 refetch 새 참조 �
 | 빌드 도구 | Vite 8 |
 | 백엔드 | Supabase (Postgres + PostgREST, `bookmarks` 테이블) |
 | 배포 | Vercel |
+
+버전 상세, DB 스키마, 환경변수, useEffect 패턴 → [docs/tech.md](./docs/tech.md)
 
 ---
 
